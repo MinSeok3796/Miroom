@@ -2,12 +2,12 @@ package org.example.miroom.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.miroom.dto.FriendDto;
-import org.example.miroom.entity.Friend;
 import org.example.miroom.service.FriendService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/friends")
@@ -21,4 +21,22 @@ public class FriendsController {
         List<FriendDto> friends = friendService.getFriendList();
         return ResponseEntity.ok(friends);
     }
+
+    //즐찾
+    @PatchMapping("/{friendId}/favorite")
+    public ResponseEntity<?> updateFavorite(
+            @PathVariable Long friendId,
+            @RequestBody Map<String, Boolean> request) {
+
+        Boolean favorite = request.get("favorite");
+        if (favorite == null) {
+            return ResponseEntity.badRequest().body("favorite 값을 보내야 합니다.");
+        }
+
+        friendService.updateFavorite(friendId, favorite);
+        String message = favorite ? "즐겨찾기 설정 완료" : "즐겨찾기 해제 완료";
+        return ResponseEntity.ok(message);
+    }
+
+
 }

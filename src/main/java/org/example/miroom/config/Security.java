@@ -35,7 +35,8 @@ public class Security {
                                 "/api/users",
                                 "/api/friend-requests",
                                 "/api/friend-requests/**",
-                                "/api/friends"
+                                "/api/friends",
+                                "/api/friends/**"
                         ).authenticated()
 
                 )

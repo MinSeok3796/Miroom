@@ -7,7 +7,6 @@ import org.example.miroom.entity.Friend;
 import org.example.miroom.entity.User;
 import org.example.miroom.repository.FriendsRepository;
 import org.example.miroom.security.AuthenticationFacade;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +19,7 @@ public class FriendService {
     private final AuthenticationFacade authenticationFacade;
     private final FriendsRepository friendRepository;
 
+    //친구 목록 조회
     public List<FriendDto> getFriendList() {
         User currentUser = authenticationFacade.getCurrentUser();
 
@@ -33,5 +33,12 @@ public class FriendService {
                         friend.getToUser().getEmail()
                 ))
                 .collect(Collectors.toList());
+    }
+    //즐겨찾기 및 해제
+    @Transactional
+    public void updateFavorite(Long friendId, boolean favorite) {
+        Friend friend = friendRepository.findById(friendId)
+                .orElseThrow(() -> new IllegalArgumentException("친구가 없습니다."));
+        friend.setFavorite(favorite);
     }
 }
