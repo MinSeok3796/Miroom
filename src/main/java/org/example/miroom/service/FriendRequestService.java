@@ -1,6 +1,8 @@
 package org.example.miroom.service;
 
 import jakarta.transaction.Transactional;
+import org.example.miroom.dto.FriendRequestDto;
+import org.example.miroom.dto.FriendRequestResponseDto;
 import org.example.miroom.entity.Friend;
 import org.example.miroom.entity.FriendRequest;
 import org.example.miroom.entity.User;
@@ -10,6 +12,8 @@ import org.example.miroom.repository.FriendRequestRepository;
 import org.example.miroom.repository.UserRepository;
 import org.example.miroom.security.AuthenticationFacade;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class FriendRequestService {
@@ -80,4 +84,19 @@ public class FriendRequestService {
             request.reject();
         }
     }
+    //요청 목록 조회
+    public List<FriendRequestResponseDto> getFriendRequests(InvitationStatus status) {
+        User currentUser = authenticationFacade.getCurrentUser();
+
+        if (status != null) {
+            return friendRequestRepository.findByReceiveUserAndInvitationStatus(currentUser, status).stream()
+                    .map(FriendRequestResponseDto::fromEntity)
+                    .toList();
+        } else {
+            return friendRequestRepository.findByReceiveUser(currentUser).stream()
+                    .map(FriendRequestResponseDto::fromEntity)
+                    .toList();
+        }
+    }
+
 }
