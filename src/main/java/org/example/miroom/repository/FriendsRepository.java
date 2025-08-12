@@ -19,4 +19,7 @@ public interface FriendsRepository extends JpaRepository<Friend, Long> {
     @Transactional
     void deleteByFromUserAndToUser(User fromUser, User toUser);
 
+    //탈퇴할때 삭제하는
+    @Transactional
+    void deleteByFromUserOrToUser(User fromUser, User touser);
 }

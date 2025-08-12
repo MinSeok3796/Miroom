@@ -19,16 +19,19 @@ public class UserController {
 
     private final UserService userService;
 
+    //회원가입
     @PostMapping("/signup")
     public ResponseEntity<SignupResponse> signup(@RequestBody @Valid SignupRequest request) {
         User user = userService.signup(request);
         SignupResponse response = new SignupResponse(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    //탈퇴하기
     @DeleteMapping("/withdraw")
-    public ResponseEntity<Void> withdraw(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<String> withdraw(@AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
-        userService.withdraw(email);
-        return ResponseEntity.noContent().build();
+        String message = userService.withdraw(email);
+        return ResponseEntity.ok(message);
     }
 }
