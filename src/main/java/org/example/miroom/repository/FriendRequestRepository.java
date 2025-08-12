@@ -12,6 +12,8 @@ public interface FriendRequestRepository extends JpaRepository<FriendRequest, Lo
     List<FriendRequest> findByReceiveUser(User receiveUser);
     List<FriendRequest> findByReceiveUserAndInvitationStatus(User receiveUser, InvitationStatus invitationStatus);
 
+    //요청도 삭제(이미 처리된거) 안그러면 다시 친구 못함
+    void deleteBySendUserAndReceiveUser(User sendUser, User receiveUser);
 }
 
 

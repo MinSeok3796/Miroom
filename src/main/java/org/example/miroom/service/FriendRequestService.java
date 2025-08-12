@@ -35,7 +35,7 @@ public class FriendRequestService {
 
     // 요청하기
     @Transactional
-    public void sendFriendRequest(Long friendId) {
+    public String sendFriendRequest(Long friendId) {
         Long currentUserId = authenticationFacade.getCurrentUserId();
         User sendUser = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자 정보가 없습니다."));
@@ -54,11 +54,13 @@ public class FriendRequestService {
 
         FriendRequest friendRequest = new FriendRequest(sendUser, receiveUser);
         friendRequestRepository.save(friendRequest);
+
+        return "친구 요청이 성공적으로 전송되었습니다.";
     }
 
     // 요청 수락/거절 처리
     @Transactional
-    public void updateInvitationStatus(Long requestId, String action) {
+    public String updateInvitationStatus(Long requestId, String action) {
         FriendRequest request = friendRequestRepository.findById(requestId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 요청입니다."));
 
@@ -72,7 +74,6 @@ public class FriendRequestService {
             User sender = request.getSendUser();
             User receiver = request.getReceiveUser();
 
-            // 친구 테이블에 양방향 저장 (중복 확인 후)
             if (!friendsRepository.existsByFromUserAndToUser(sender, receiver)) {
                 friendsRepository.save(new Friend(sender, receiver, false));
             }
@@ -80,11 +81,17 @@ public class FriendRequestService {
                 friendsRepository.save(new Friend(receiver, sender, false));
             }
 
+            return "친구 요청을 수락했습니다.";
+
         } else if (action.equalsIgnoreCase("reject")) {
             request.reject();
+            return "친구 요청을 거절했습니다.";
         }
+
+        throw new IllegalArgumentException("잘못된 요청 처리 액션입니다. (accept/reject만 허용)");
     }
-    //요청 목록 조회
+
+    // 요청 목록 조회
     public List<FriendRequestResponseDto> getFriendRequests(InvitationStatus status) {
         User currentUser = authenticationFacade.getCurrentUser();
 
@@ -98,5 +105,4 @@ public class FriendRequestService {
                     .toList();
         }
     }
-
 }

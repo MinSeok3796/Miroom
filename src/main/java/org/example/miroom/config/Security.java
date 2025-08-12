@@ -26,13 +26,15 @@ public class Security {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
+
+                        .requestMatchers( //토큰 필요없이
                                 "/api/auth/login",
                                 "/api/users/signup"
                         ).permitAll()
-                        .requestMatchers(
+
+                        .requestMatchers( //권한(토큰) 필요
                                 "/api/auth/logout",
-                                "/api/users",
+                                "/api/users/withdraw",
                                 "/api/friend-requests",
                                 "/api/friend-requests/**",
                                 "/api/friends",
