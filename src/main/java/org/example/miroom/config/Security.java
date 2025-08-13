@@ -35,10 +35,9 @@ public class Security {
                         .requestMatchers( //권한(토큰) 필요
                                 "/api/auth/logout",
                                 "/api/users/withdraw",
-                                "/api/friend-requests",
                                 "/api/friend-requests/**",
-                                "/api/friends",
-                                "/api/friends/**"
+                                "/api/friends/**",
+                                "/api/boards/**"
                         ).authenticated()
 
                 )
