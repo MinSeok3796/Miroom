@@ -51,8 +51,19 @@ public class BoardController {
     public ResponseEntity<Map<String,String>> inviteUser(
             @PathVariable Long boardId, @RequestBody BoardInviteDto dto) {
 
-        String message = boardInviteService.inviteUserToBoard(boardId, dto.getUserEmail());
+        String message = boardInviteService.inviteUserToBoard(boardId, dto.getEmail());
 
+        return ResponseEntity.ok(Map.of("message", message));
+    }
+
+    //초대요청 처리
+    @PatchMapping("/invitations/{boardRequestId}")
+    public ResponseEntity<Map<String, String>> respondToInvitation(
+            @PathVariable Long boardRequestId,
+            @RequestBody Map<String, String> body) {
+
+        String action = body.get("action");
+        String message = boardInviteService.respondToBoardInvitation(boardRequestId, action);
         return ResponseEntity.ok(Map.of("message", message));
     }
 }

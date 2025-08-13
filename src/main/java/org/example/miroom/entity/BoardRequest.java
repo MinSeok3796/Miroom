@@ -30,7 +30,7 @@ public class BoardRequest extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "invitation_status",nullable = false)
-    private InvitationStatus status;
+    private InvitationStatus status = InvitationStatus.PENDING;
 
     public BoardRequest(){}
 
