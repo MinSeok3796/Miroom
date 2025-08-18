@@ -66,4 +66,15 @@ public class BoardController {
         String message = boardInviteService.respondToBoardInvitation(boardRequestId, action);
         return ResponseEntity.ok(Map.of("message", message));
     }
+
+    //추방
+    @DeleteMapping("/{boardId}/Members/{userId}")
+    public ResponseEntity<Map<String, String>> removeMember(
+            @PathVariable Long boardId,
+            @PathVariable Long userId) {
+
+        String message = boardInviteService.removeMember(boardId, userId);
+        return ResponseEntity.ok(Map.of("message", message));
+    }
+
 }
