@@ -1,0 +1,108 @@
+package org.example.miroom.service;
+
+import jakarta.transaction.Transactional;
+import org.example.miroom.dto.FriendRequestDto;
+import org.example.miroom.dto.FriendRequestResponseDto;
+import org.example.miroom.entity.Friend;
+import org.example.miroom.entity.FriendRequest;
+import org.example.miroom.entity.User;
+import org.example.miroom.enums.InvitationStatus;
+import org.example.miroom.repository.FriendsRepository;
+import org.example.miroom.repository.FriendRequestRepository;
+import org.example.miroom.repository.UserRepository;
+import org.example.miroom.security.AuthenticationFacade;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class FriendRequestService {
+
+    private final FriendRequestRepository friendRequestRepository;
+    private final FriendsRepository friendsRepository;
+    private final UserRepository userRepository;
+    private final AuthenticationFacade authenticationFacade;
+
+    public FriendRequestService(FriendRequestRepository friendRequestRepository,
+                                FriendsRepository friendsRepository,
+                                UserRepository userRepository,
+                                AuthenticationFacade authenticationFacade) {
+        this.friendRequestRepository = friendRequestRepository;
+        this.friendsRepository = friendsRepository;
+        this.userRepository = userRepository;
+        this.authenticationFacade = authenticationFacade;
+    }
+
+    // 요청하기
+    @Transactional
+    public String sendFriendRequest(Long friendId) {
+        Long currentUserId = authenticationFacade.getCurrentUserId();
+        User sendUser = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자 정보가 없습니다."));
+
+        if (sendUser.getId().equals(friendId)) {
+            throw new IllegalArgumentException("자기 자신에게 친구 요청할 수 없습니다.");
+        }
+
+        User receiveUser = userRepository.findById(friendId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 사용자입니다."));
+
+        boolean exists = friendRequestRepository.existsBySendUserAndReceiveUser(sendUser, receiveUser);
+        if (exists) {
+            throw new IllegalStateException("이미 친구 요청을 보냈습니다.");
+        }
+
+        FriendRequest friendRequest = new FriendRequest(sendUser, receiveUser);
+        friendRequestRepository.save(friendRequest);
+
+        return "친구 요청이 성공적으로 전송되었습니다.";
+    }
+
+    // 요청 수락/거절 처리
+    @Transactional
+    public String updateInvitationStatus(Long requestId, String action) {
+        FriendRequest request = friendRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 친구 요청입니다."));
+
+        if (request.getInvitationStatus() != InvitationStatus.PENDING) {
+            throw new IllegalStateException("이미 처리된 친구 요청입니다.");
+        }
+
+        if (action.equalsIgnoreCase("accept")) {
+            request.accept();
+
+            User sender = request.getSendUser();
+            User receiver = request.getReceiveUser();
+
+            if (!friendsRepository.existsByFromUserAndToUser(sender, receiver)) {
+                friendsRepository.save(new Friend(sender, receiver, false));
+            }
+            if (!friendsRepository.existsByFromUserAndToUser(receiver, sender)) {
+                friendsRepository.save(new Friend(receiver, sender, false));
+            }
+
+            return "친구 요청을 수락했습니다.";
+
+        } else if (action.equalsIgnoreCase("reject")) {
+            request.reject();
+            return "친구 요청을 거절했습니다.";
+        }
+
+        throw new IllegalArgumentException("잘못된 요청 처리 액션입니다. (accept/reject만 허용)");
+    }
+
+    // 요청 목록 조회
+    public List<FriendRequestResponseDto> getFriendRequests(InvitationStatus status) {
+        User currentUser = authenticationFacade.getCurrentUser();
+
+        if (status != null) {
+            return friendRequestRepository.findByReceiveUserAndInvitationStatus(currentUser, status).stream()
+                    .map(FriendRequestResponseDto::fromEntity)
+                    .toList();
+        } else {
+            return friendRequestRepository.findByReceiveUser(currentUser).stream()
+                    .map(FriendRequestResponseDto::fromEntity)
+                    .toList();
+        }
+    }
+}

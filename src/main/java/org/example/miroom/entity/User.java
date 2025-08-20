@@ -1,5 +1,6 @@
 package org.example.miroom.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -23,6 +24,7 @@ public class User extends BaseTimeEntity {
     private String password;
 
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE", name = "alarm_enabled")
+    @JsonProperty("alarm_enabled")
     private boolean alarmEnabled;
 
     private String email;
@@ -44,6 +46,4 @@ public class User extends BaseTimeEntity {
         boardMembers.add(boardMember);
         boardMember.setUser(this);
     }
-
-
 }

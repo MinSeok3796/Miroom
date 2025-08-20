@@ -3,9 +3,11 @@ package org.example.miroom.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Table(name="friend")
 public class Friend extends BaseTimeEntity{
 
