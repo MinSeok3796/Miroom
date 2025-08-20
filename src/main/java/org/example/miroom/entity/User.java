@@ -1,14 +1,14 @@
 package org.example.miroom.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Entity
-@Table(name="user")
+@Table(name="users")
 public class User extends BaseTimeEntity {
 
     @Id
