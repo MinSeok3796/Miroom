@@ -3,10 +3,12 @@ package org.example.miroom.entity;
 import jakarta.persistence.*;
 import jakarta.persistence.Entity;
 import lombok.Getter;
+import lombok.Setter;
 import org.example.miroom.enums.InvitationStatus;
 
 @Entity
 @Getter
+@Setter
 @Table(name = "board_request")
 public class BoardRequest extends BaseTimeEntity{
 
@@ -28,7 +30,7 @@ public class BoardRequest extends BaseTimeEntity{
 
     @Enumerated(EnumType.STRING)
     @Column(name = "invitation_status",nullable = false)
-    private InvitationStatus status;
+    private InvitationStatus status = InvitationStatus.PENDING;
 
     public BoardRequest(){}
 
