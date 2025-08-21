@@ -17,6 +17,7 @@ public class BoardQueryService {
     private final BoardMemberRepository boardMemberRepository;
     private final AuthenticationFacade authenticationFacade;
 
+    //보드 조회
     public List<BoardSummaryDto> getMyBoards() {
         User currentUser = authenticationFacade.getCurrentUser();
 

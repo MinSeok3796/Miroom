@@ -89,23 +89,5 @@ public class BoardInviteService {
         }
     }
 
-    //추방시키기
-    @Transactional
-    public String removeMember(Long boardId, Long memberId) {
-        User currentUser = authenticationFacade.getCurrentUser();
 
-        BoardMember adminMember = boardMemberRepository
-                .findByBoardBoardIdAndUserId(boardId, currentUser.getId()).orElseThrow(() -> new RuntimeException("보드 멤버가 아닙니다."));
-
-        if (adminMember.getRole() != Role.admin) {
-            throw new SecurityException("관리자만 멤버를 내보낼 수 있습니다.");
-        }
-
-        BoardMember outMember = boardMemberRepository
-                .findById(memberId).orElseThrow(() -> new RuntimeException("멤버가 존재하지 않습니다."));
-
-        boardMemberRepository.delete(outMember);
-
-        return outMember.getUser().getNickname()+"멤버를 내보냈습니다.";
-    }
 }
