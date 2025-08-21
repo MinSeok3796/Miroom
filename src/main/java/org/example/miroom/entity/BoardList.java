@@ -2,6 +2,7 @@ package org.example.miroom.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -16,9 +17,11 @@ public class BoardList extends BaseTimeEntity{
     @JoinColumn(name = "board_id", nullable = false)
     private Board board;
 
+    @Setter
     @Column(name = "list_title", length = 20, nullable = false)
     private String listTitle;
 
+    @Setter
     @Column(nullable = false)
     private Long position;
 
